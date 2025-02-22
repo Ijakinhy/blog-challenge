@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import Navbar from './components/Navbar.vue';
+import Blog from './components/Blog.vue';
 
 const posts = ref([]); // Using `ref` to make `posts` reactive
 
@@ -18,9 +20,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h1 class="text-red-700">hellooooooooo</h1>
-    <ul>
-      <li v-for="post in posts" :key="post.id">{{ post.description }}</li>
-    </ul>
+   <Navbar/>
+  <Blog :posts="posts" />
   </div>
 </template>
