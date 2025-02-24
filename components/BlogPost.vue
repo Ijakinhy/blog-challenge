@@ -7,23 +7,15 @@ defineProps({
 </script>
 
 <template>
-  <div class="max-w-md rounded overflow-hidden shadow-xl  transition-shadow duration-300">
-    
-              <div class="h-80 w-full bg-cover p-4">
-              <img
-                :src="post.post_image"
-                alt="post.title"
-                
-                class=" h-full w-full object-contain"
-              />
-            </div>
-
-              
-    <div class="px-6 py-4">
-      <div class="font-bold text-xl mb-2">{{ post.title }}</div>
-      <p class="text-gray-700 text-base">
-        {{ post.description }}
-      </p>
+  <div class="rounded-xl shadow-lg">
+    <div class="p-5 flex flex-col">
+      <div class="rounded-xl h-80 overflow-hidden">
+        <img :src="post.post_image" alt="" class="w-full h-full object-cover" />
+      </div>
+      <h5 class="text-2xl md:text-3xl font-medium mt-3">
+        {{ post.title }}
+      </h5>
+      <p class="text-[#535d68] text-lg mt-3">{{ post.description }}</p>
     </div>
   </div>
 </template>

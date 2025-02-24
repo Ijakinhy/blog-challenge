@@ -9,8 +9,15 @@ watch(openCreatePost, (newVal) => {
   emit("update:modelValue", newVal);
 });
 
-watch
+const handleLogout = async () => {
+  const $supabase = useNuxtApp().$supabase;
+  const { error } = await $supabase.auth.signOut();
 
+  if (error) {
+    console.log(error.message);
+  }
+  console.log("sign out successfully");
+};
 </script>
 
 <template>
@@ -29,6 +36,7 @@ watch
           create post
         </button>
         <button
+          @click="handleLogout"
           class="text-white hover:bg-[#69ccef] hover:font-bold rounded-md text-[17px] font-medium py-2 px-2"
         >
           Logout

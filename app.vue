@@ -1,25 +1,22 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import Navbar from './components/Navbar.vue';
-import Blog from './components/Blog.vue';
-import Login from './components/Login.vue';
+import { ref, onMounted } from "vue";
+import axios from "axios";
+import Navbar from "./components/Navbar.vue";
+import Blog from "./components/Blog.vue";
+import Login from "./components/Login.vue";
 
-const posts = ref([]); 
+const posts = ref([]);
 const openCreatePost = ref(false);
-const title = ref('');
-const description = ref('');
+const title = ref("");
+const description = ref("");
 const image = ref(null);
-const imagePreview = ref(null)
-
-
+const imagePreview = ref(null);
 
 onMounted(async () => {
   try {
-    const res = await axios.get("/api/blog");  
+    const res = await axios.get("/api/blog");
     posts.value = res.data;
-
-      
+    posts.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   } catch (error) {
     console.error(error);
   }
@@ -37,55 +34,53 @@ const createPost = async () => {
   const { $supabase } = useNuxtApp();
 
   try {
-        const { data: userData, error } = await $supabase.auth.getUser();
+    const { data: userData, error } = await $supabase.auth.getUser();
     if (error || !userData) {
       console.error("User not authenticated");
       return;
     }
 
-
     // const token = await $supabase.auth.getSession().then(res => res.data.session.access_token);
-    const {data:{session}} =  await $supabase.auth.getSession()
-const token  =  session.access_token
+    const {
+      data: { session },
+    } = await $supabase.auth.getSession();
+    const token = session.access_token;
     const formData = new FormData();
     formData.append("title", title.value);
     formData.append("description", description.value);
     formData.append("image", image.value);
 
-
     const res = await axios.post("/api/createPost", formData, {
       headers: {
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
     });
 
-    
+    //  add item to  th state
 
-
-    posts.value = [res.data, ...posts.value];
-
+    posts.value.unshift(res.data);
     // Clear form fields
     title.value = "";
     description.value = "";
     image.value = null;
     imagePreview.value = null;
-    openCreatePost.value = false;  
+    openCreatePost.value = false;
   } catch (error) {
     console.error("Error creating post:", error);
   }
 };
-
-
 </script>
 
 <template>
   <div class="relative">
-
-  <div class="sticky top-0 z-50 w-full bg-white shadow-md">
-     <Navbar v-model="openCreatePost" />
-  </div>
-         <div v-if="openCreatePost" class="fixed right-6 z-50 p-10 mt-10 w-[32rem] bg-white shadow-xl shadow-black/20">
+    <div class="sticky top-0 z-50 w-full bg-white shadow-md">
+      <Navbar v-model="openCreatePost" />
+    </div>
+    <div
+      v-if="openCreatePost"
+      class="fixed right-6 z-50 p-10 mt-10 w-[32rem] bg-white shadow-xl shadow-black/20"
+    >
       <form @submit.prevent="createPost">
         <input
           type="text"
@@ -101,14 +96,20 @@ const token  =  session.access_token
           placeholder="Write something..."
         />
 
-        <label class="flex items-center justify-center w-full h-12 border border-gray-300/20 rounded-md text-sm bg-gray-400/20 text-slate-900 cursor-pointer">
+        <label
+          class="flex items-center justify-center w-full h-12 border border-gray-300/20 rounded-md text-sm bg-gray-400/20 text-slate-900 cursor-pointer"
+        >
           <input type="file" class="hidden" @change="handleUploadImage" />
           Add Image
         </label>
 
         <!-- Image preview -->
         <div v-if="imagePreview" class="mt-3">
-          <img :src="imagePreview" alt="Preview" class="w-full h-40 object-contain rounded-md border" />
+          <img
+            :src="imagePreview"
+            alt="Preview"
+            class="w-full h-40 object-contain rounded-md border"
+          />
         </div>
 
         <button
@@ -119,7 +120,7 @@ const token  =  session.access_token
         </button>
       </form>
     </div>
-  <Blog :posts="posts" /> 
-  <!-- <Login/> -->
+    <Blog :posts="posts" />
+    <!-- <Login/> -->
   </div>
 </template>
