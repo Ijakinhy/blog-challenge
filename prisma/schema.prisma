@@ -13,6 +13,7 @@ model BlogChallenge {
   description String?
   created_at  DateTime? @default(now()) @db.Timestamptz(6)
   post_image  String?
+  own_id      String?
 
   @@map("blog_challenge")
 }

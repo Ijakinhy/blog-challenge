@@ -35,7 +35,8 @@ const login = async () => {
       console.error(error);
 
     }
-;
+console.log(data);
+
     
   } catch (error) {
     console.error(error);
