@@ -17,4 +17,5 @@ export default defineNuxtConfig({
   },
 
   plugins: ['~/plugins/supabase.client.ts'],
+  buildDir: "dist",
 });
