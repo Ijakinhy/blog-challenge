@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { prisma } from "./blog";
+import { prisma } from "~/prisma";
 
 const supabase = createClient(
   process.env.NUXT_PUBLIC_SUPABASE_URL,
