@@ -1,8 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 const alreadyHaveAccount = ref(false);
 
 const signUp = async () => {
@@ -13,10 +13,13 @@ const signUp = async () => {
       email: email.value,
       password: password.value,
     });
-    
+
     if (error) {
       console.error(error);
-    } 
+    }
+    if (user) {
+      return navigateTo("/");
+    }
   } catch (error) {
     console.error(error);
   }
@@ -33,31 +36,40 @@ const login = async () => {
 
     if (error) {
       console.error(error);
-
     }
-console.log(data);
-
-    
+    if (data) {
+      return navigateTo("/"); // Redirect to home page
+    }
   } catch (error) {
     console.error(error);
   }
 };
-
 </script>
 
 <template>
-  <div class="bg-[#00778c] h-lvh gap-y-28 flex justify-center items-center flex-col">
+  <div
+    class="bg-[#00778c] h-lvh gap-y-28 flex justify-center items-center flex-col"
+  >
     <div class="flex justify-center">
       <h1 class="text-white text-4xl font-bold font-montserrat">
         <span class="text-[#69ccef]">Blog</span>Challenge
       </h1>
     </div>
-    
+
     <template v-if="!alreadyHaveAccount">
-      <div class="bg-[#ffffff] mt-10 shadow-2xl rounded-lg ml-auto mr-auto w-[28rem] px-5 py-8 xs:w-96">
-        <h2 class="text-center pb-4 text-[#00778c] text-3xl font-medium capitalize">Create New Account</h2>
-        
-        <form class="flex flex-col w-full items-center" @submit.prevent="signUp">
+      <div
+        class="bg-[#ffffff] mt-10 shadow-2xl rounded-lg ml-auto mr-auto w-[28rem] px-5 py-8 xs:w-96"
+      >
+        <h2
+          class="text-center pb-4 text-[#00778c] text-3xl font-medium capitalize"
+        >
+          Create New Account
+        </h2>
+
+        <form
+          class="flex flex-col w-full items-center"
+          @submit.prevent="signUp"
+        >
           <div class="flex-1 w-full relative">
             <input
               autoComplete="off"
@@ -89,9 +101,12 @@ console.log(data);
             Sign Up
           </button>
         </form>
-        
+
         <div class="flex justify-center mt-4">
-          <button @click="alreadyHaveAccount = !alreadyHaveAccount" class="text-sky-950 hover:underline text-sm">
+          <button
+            @click="alreadyHaveAccount = !alreadyHaveAccount"
+            class="text-sky-950 hover:underline text-sm"
+          >
             Already have an account?
           </button>
         </div>
@@ -99,9 +114,15 @@ console.log(data);
     </template>
 
     <template v-else>
-      <div class="bg-[#ffffff] mt-10 shadow-2xl rounded-lg ml-auto mr-auto w-[28rem] px-5 py-8 xs:w-96">
-        <h2 class="text-center pb-4 text-[#00778c] text-3xl font-medium capitalize">Login</h2>
-        
+      <div
+        class="bg-[#ffffff] mt-10 shadow-2xl rounded-lg ml-auto mr-auto w-[28rem] px-5 py-8 xs:w-96"
+      >
+        <h2
+          class="text-center pb-4 text-[#00778c] text-3xl font-medium capitalize"
+        >
+          Login
+        </h2>
+
         <form class="flex flex-col w-full items-center" @submit.prevent="login">
           <div class="flex-1 w-full relative">
             <input
@@ -134,9 +155,12 @@ console.log(data);
             Log In
           </button>
         </form>
-        
+
         <div class="flex justify-center mt-4">
-          <button @click="alreadyHaveAccount = !alreadyHaveAccount" class="text-sky-950 hover:underline text-sm">
+          <button
+            @click="alreadyHaveAccount = !alreadyHaveAccount"
+            class="text-sky-950 hover:underline text-sm"
+          >
             Don't have an account?
           </button>
         </div>

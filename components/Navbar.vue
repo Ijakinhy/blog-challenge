@@ -16,7 +16,9 @@ const handleLogout = async () => {
   if (error) {
     console.log(error.message);
   }
+
   console.log("sign out successfully");
+  navigateTo("/login");
 };
 </script>
 

@@ -9,10 +9,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
     const supabase = createClient(config.public.supabaseUrl, config.public.supabaseKey)
 
-    return {
-        provide: {
-            supabase
-        }
-    }
+
+    nuxtApp.provide("supabase", supabase)
 
 })
