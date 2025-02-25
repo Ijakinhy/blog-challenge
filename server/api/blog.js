@@ -1,7 +1,8 @@
-import { prisma } from "~/prisma";
+import { connectDB, prisma } from "~/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
+    await connectDB();
     const blogPosts = await prisma.blogChallenge.findMany();
 
     return blogPosts;

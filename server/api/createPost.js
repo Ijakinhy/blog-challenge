@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { prisma } from "~/prisma";
+import { connectDB, prisma } from "~/prisma";
 
 const supabase = createClient(
   process.env.NUXT_PUBLIC_SUPABASE_URL,
@@ -8,6 +8,7 @@ const supabase = createClient(
 
 export default defineEventHandler(async (event) => {
   try {
+    await connectDB();
     const authHeader = getHeader(event, "authorization");
     if (!authHeader) {
       return { error: "Unauthorized" };
