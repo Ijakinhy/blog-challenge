@@ -1,7 +1,9 @@
 {
   "build": {
-    "installCommand": "pnpm install",
-    "command": "pnpm run build"
+    "command": "nuxt build && pnpm prisma generate",
+    "outputDirectory": "dist"
   },
-  "outputDirectory": "dist"
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

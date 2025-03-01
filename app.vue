@@ -4,6 +4,6 @@ import { NuxtLayout, NuxtPage } from "#components";
 
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <NuxtPage :key="$route.fullPath" />
   </NuxtLayout>
 </template>
