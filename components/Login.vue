@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 const email = ref("");
 const password = ref("");
-const alreadyHaveAccount = ref(false);
+let alreadyHaveAccount = ref(false);
 
 const signUp = async () => {
   const $supabase = useNuxtApp().$supabase;
@@ -24,6 +24,10 @@ const signUp = async () => {
     }
   } catch (error) {
     console.log(error);
+  } finally {
+    alreadyHaveAccount.value = true;
+    email.value = "";
+    password.value = "";
   }
 };
 
@@ -37,7 +41,7 @@ const login = async () => {
     });
 
     if (error) {
-      console.error(error);
+      console.log(error.message);
     }
     console.log("successfull");
 
