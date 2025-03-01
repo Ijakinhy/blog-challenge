@@ -11,8 +11,4 @@ if (process.env.NODE_ENV === "production") {
   prisma = global.prisma;
 }
 
-export async function connectDB() {
-  await prisma.$connect();
-}
-
 export { prisma };

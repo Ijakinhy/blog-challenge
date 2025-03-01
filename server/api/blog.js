@@ -1,10 +1,8 @@
-import { connectDB, prisma } from "~/prisma";
+import { prisma } from "~/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
-    await connectDB();
-    const blogPosts = await prisma.blogChallenge.findMany();
-
+    const blogPosts = await prisma.BlogChallenge.findMany();
     return blogPosts;
   } catch (error) {
     console.error("Database Error:", error);

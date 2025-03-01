@@ -17,11 +17,13 @@ const signUp = async () => {
     if (error) {
       console.error(error);
     }
+    console.log("successful");
+
     if (user) {
       return navigateTo("/");
     }
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 
@@ -37,6 +39,8 @@ const login = async () => {
     if (error) {
       console.error(error);
     }
+    console.log("successfull");
+
     if (data) {
       return navigateTo("/"); // Redirect to home page
     }

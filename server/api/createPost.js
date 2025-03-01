@@ -1,14 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
-import { connectDB, prisma } from "~/prisma";
+import { prisma } from "~/prisma";
 
 const supabase = createClient(
-  process.env.NUXT_PUBLIC_SUPABASE_URL,
-  process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY // Ensure this key is available
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 export default defineEventHandler(async (event) => {
   try {
-    await connectDB();
     const authHeader = getHeader(event, "authorization");
     if (!authHeader) {
       return { error: "Unauthorized" };
@@ -16,6 +15,7 @@ export default defineEventHandler(async (event) => {
 
     const token = authHeader.replace("Bearer ", "");
 
+    // Get the authenticated user
     const {
       data: { user },
       error: authError,
@@ -35,14 +35,16 @@ export default defineEventHandler(async (event) => {
     const file = formData.find((f) => f.name === "image");
 
     if (!file) {
-      return { error: "no file uploaded" };
+      return { error: "No file uploaded" };
     }
 
+    // Generate unique filename
     const fileExtension = file.filename.split(".").pop();
-    const fileName = `blog_post_images/${Date.now()}-${Math.random()
+    const fileName = `blog_post_images/${userId}/${Date.now()}-${Math.random()
       .toString(36)
       .slice(2)}.${fileExtension}`;
 
+    // Upload file to Supabase Storage
     const { data, error } = await supabase.storage
       .from("images")
       .upload(fileName, file.data, {
@@ -50,33 +52,24 @@ export default defineEventHandler(async (event) => {
       });
 
     if (error) {
-      return { error: "Error uploading image" };
+      return { error: "Error uploading image", details: error };
     }
 
-    const imageUrl = `${process.env.NUXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${fileName}`;
+    const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${fileName}`;
 
-    const newPost = {
-      title,
-      description,
-      created_at: new Date(),
-      post_image: imageUrl,
-      own_id: userId,
-    };
-
+    // Insert post into the database
     const { data: post, error: dbError } = await supabase
       .from("blog_challenge")
       .insert([
         {
-          title: formData.find((f) => f.name === "title")?.data.toString(),
-          description: formData
-            .find((f) => f.name === "description")
-            ?.data.toString(),
+          title,
+          description,
           post_image: imageUrl,
           created_at: new Date(),
           own_id: userId,
         },
       ])
-      .select()
+      .select("*")
       .single();
 
     if (dbError) {
@@ -86,7 +79,7 @@ export default defineEventHandler(async (event) => {
     return post;
   } catch (error) {
     console.error("Database Error:", error);
-    return { error: "Failed to create post" };
+    return { error: "Failed to create post", details: error.message };
   } finally {
     await prisma.$disconnect();
   }

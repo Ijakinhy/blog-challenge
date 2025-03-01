@@ -69,6 +69,7 @@ const createPost = async () => {
     image.value = null;
     imagePreview.value = null;
     openCreatePost.value = false;
+    console.log("hey");
   } catch (error) {
     console.error("Error creating post:", error);
   }
