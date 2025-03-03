@@ -1,5 +1,8 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
+  build: {
+    transpile: ['trpc-nuxt']
+  },
   devtools: { enabled: true },
   css: ['~/assets/css/tailwind.css'],
   postcss: {
@@ -21,6 +24,12 @@ export default defineNuxtConfig({
     }
   },
 
-  plugins: ['~/plugins/supabase.client.ts', { src: '@/plugins/supabase.client.ts', mode: 'client' }],
+
+  plugins: [
+    '~/plugins/trpc.client.ts',  // Register the tRPC plugin
+    { src: '~/plugins/supabase.client.ts', mode: 'client' }  // Corrected Supabase plugin with src and mode specified
+  ],
+
+
   buildDir: "dist",
 });

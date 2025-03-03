@@ -16,8 +16,10 @@
     "@trpc/server": "^10.45.2",
     "axios": "^1.7.9",
     "prisma": "^6.4.1",
+    "trpc-nuxt": "^0.10.22",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
