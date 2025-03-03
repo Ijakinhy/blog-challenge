@@ -1,12 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios";
-import Navbar from "../components/Navbar.vue";
-import Blog from "../components/Blog.vue";
-
-definePageMeta({
-  middleware: "auth-navigation",
-});
+import { useNuxtApp } from "#app";
 
 const posts = ref([]);
 const openCreatePost = ref(false);
@@ -15,10 +9,10 @@ const description = ref("");
 const image = ref(null);
 const imagePreview = ref(null);
 const { $supabase, $trpc } = useNuxtApp();
+
 onMounted(async () => {
   try {
     const blogs = await $trpc.blogPosts.query();
-
     posts.value = blogs;
     posts.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const {
@@ -28,6 +22,7 @@ onMounted(async () => {
     console.error(error);
   }
 });
+
 // Handle image selection
 const handleUploadImage = (event) => {
   const file = event.target.files[0];
@@ -35,6 +30,15 @@ const handleUploadImage = (event) => {
     image.value = file;
     imagePreview.value = URL.createObjectURL(file);
   }
+};
+
+const convertToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 };
 
 const createPost = async () => {
@@ -49,28 +53,28 @@ const createPost = async () => {
       data: { session },
     } = await $supabase.auth.getSession();
     const token = session.access_token;
-    const formData = new FormData();
-    formData.append("title", title.value);
-    formData.append("description", description.value);
-    formData.append("image", image.value);
 
-    const res = await axios.post("/api/createPost", formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
+    // Convert image
+    let base64Image = null;
+    if (image.value) {
+      base64Image = await convertToBase64(image.value);
+    }
+
+    // Create the post using tRPC
+    const res = await $trpc.createPost.mutate({
+      title: title.value,
+      description: description.value,
+      image: base64Image,
+      token: token,
     });
 
-    //  add item to  th state
-
-    posts.value.unshift(res.data);
-    // Clear form fields
+    posts.value.unshift(res);
     title.value = "";
     description.value = "";
     image.value = null;
     imagePreview.value = null;
     openCreatePost.value = false;
-    console.log("hey");
+    console.log("Post created successfully!");
   } catch (error) {
     console.error("Error creating post:", error);
   }
@@ -90,13 +94,15 @@ const createPost = async () => {
         <input
           type="text"
           name="title"
-          v-model="title"
           placeholder="Title"
+          :value="title"
+          @input="title = $event.target.value"
           class="p-2 border text-sm rounded-md input-bordered my-5 focus:border border-gray-400 focus:outline-none placeholder:capitalize w-full max-w-md"
         />
 
         <textarea
-          v-model="description"
+          :value="description"
+          @input="description = $event.target.value"
           class="px-3 py-2 h-32 w-full text-black border border-gray-500 bg-transparent rounded-md focus:outline-none placeholder:text-[28px]"
           placeholder="Write something..."
         />
