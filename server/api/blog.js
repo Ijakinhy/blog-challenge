@@ -2,7 +2,7 @@ import { prisma } from "~/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
-    const blogPosts = await prisma.BlogChallenge.findMany();
+    const blogPosts = await prisma.blogChallenge.findMany();
     return blogPosts;
   } catch (error) {
     console.error("Database Error:", error);

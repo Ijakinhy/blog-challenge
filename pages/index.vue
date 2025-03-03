@@ -14,11 +14,12 @@ const title = ref("");
 const description = ref("");
 const image = ref(null);
 const imagePreview = ref(null);
-const { $supabase } = useNuxtApp();
+const { $supabase, $trpc } = useNuxtApp();
 onMounted(async () => {
   try {
-    const res = await axios.get("/api/blog");
-    posts.value = res.data;
+    const blogs = await $trpc.blogPosts.query();
+
+    posts.value = blogs;
     posts.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const {
       data: { user },
