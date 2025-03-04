@@ -80,6 +80,28 @@ export const appRouter = router({
             }
         }),
 
+    createAccount: publicProcedure.input(z.object({
+        email: z.string().email(),
+        password: z.string(),
+        username: z.string()
+    })).mutation(async ({ input }) => {
+        const { email, password, username } = input
+
+        const { data, error } = await supabase.auth.signUp({ email, password })
+
+        if (error) {
+            console.log("error while creating accout", error);
+        }
+
+        const res = await prisma.user.create({
+            data: {
+                email: email,
+                username: username,
+                user_id: data.user?.id
+            }
+        })
+        return res
+    })
 
 
 })
