@@ -8,10 +8,14 @@ const title = ref("");
 const description = ref("");
 const image = ref(null);
 const imagePreview = ref(null);
+const isLoading = ref(false);
+const isLoadingCreate = ref(false);
+
 const { $supabase, $trpc } = useNuxtApp();
 
 onMounted(async () => {
   try {
+    isLoading.value = true;
     const blogs = await $trpc.blogPosts.query();
     posts.value = blogs;
     posts.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -20,6 +24,9 @@ onMounted(async () => {
     } = await $supabase.auth.getUser();
   } catch (error) {
     console.error(error);
+    isLoading.value = false;
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -43,6 +50,7 @@ const convertToBase64 = (file) => {
 
 const createPost = async () => {
   try {
+    isLoadingCreate.value = true;
     const { data: userData, error } = await $supabase.auth.getUser();
     if (error || !userData) {
       console.error("User not authenticated");
@@ -74,9 +82,11 @@ const createPost = async () => {
     image.value = null;
     imagePreview.value = null;
     openCreatePost.value = false;
+    isLoadingCreate.value = false;
     console.log("Post created successfully!");
   } catch (error) {
     console.error("Error creating post:", error);
+    isLoadingCreate.value = false;
   }
 };
 </script>
@@ -124,13 +134,20 @@ const createPost = async () => {
         </div>
 
         <button
+          :disabled="isLoading || !description || !image || !title"
           type="submit"
-          class="disabled:bg-gray-400/20 bg-sky-800 text-gray-200 w-full mt-4 py-2 rounded-md"
+          class="bg-sky-800 disabled:bg-sky-800/60 disabled:cursor-not-allowed text-gray-200 w-full mt-4 py-2 rounded-md"
         >
-          Post
+          {{ isLoadingCreate ? "Loading... " : " Post" }}
         </button>
       </form>
     </div>
-    <Blog :posts="posts" />
+    <h1
+      v-if="isLoading"
+      class="text-gray-500 font-bold text-center mt-60 text-5xl"
+    >
+      Loading ....
+    </h1>
+    <Blog v-else :posts="posts" />
   </div>
 </template>

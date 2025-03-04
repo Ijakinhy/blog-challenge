@@ -4,8 +4,10 @@ import { ref } from "vue";
 const email = ref("");
 const password = ref("");
 let alreadyHaveAccount = ref(false);
+const isLoading = ref(false);
 
 const signUp = async () => {
+  isLoading.value = true;
   const $supabase = useNuxtApp().$supabase;
 
   try {
@@ -28,10 +30,12 @@ const signUp = async () => {
     alreadyHaveAccount.value = true;
     email.value = "";
     password.value = "";
+    isLoading.value = false;
   }
 };
 
 const login = async () => {
+  isLoading.value = true;
   const $supabase = useNuxtApp().$supabase;
 
   try {
@@ -44,6 +48,7 @@ const login = async () => {
       console.log(error.message);
     }
     console.log("successfull");
+    isLoading.value = false;
 
     if (data) {
       return navigateTo("/"); // Redirect to home page
@@ -84,6 +89,7 @@ const login = async () => {
               type="email"
               name="email"
               :value="email"
+              required
               @input="email = $event.target.value"
               placeholder="Email"
               class="p-2 border text-sm rounded-md input-bordered my-5 focus:border-none border-gray-400 placeholder:capitalize w-full max-w-md"
@@ -95,6 +101,7 @@ const login = async () => {
               autoComplete="off"
               type="password"
               name="password"
+              required
               :value="password"
               @input="password = $event.target.value"
               placeholder="Password"
@@ -106,7 +113,7 @@ const login = async () => {
             type="submit"
             class="p-1 rounded-md hover:bg-[#00778cd8] bg-[#00778c] w-full text-white mt-8 text-lg font-medium"
           >
-            Sign Up
+            {{ isLoading ? "Loading..." : "Sign up" }}
           </button>
         </form>
 
@@ -138,6 +145,7 @@ const login = async () => {
               type="email"
               name="email"
               :value="email"
+              required
               @input="email = $event.target.value"
               placeholder="Email"
               class="p-2 border text-sm rounded-md input-bordered my-5 focus:border-none border-gray-400 placeholder:capitalize w-full max-w-md"
@@ -148,6 +156,7 @@ const login = async () => {
             <input
               autoComplete="off"
               type="password"
+              required
               name="password"
               :value="password"
               @input="password = $event.target.value"
@@ -160,7 +169,7 @@ const login = async () => {
             type="submit"
             class="p-1 rounded-md hover:bg-[#00778cd8] bg-[#00778c] w-full text-white mt-8 text-lg font-medium"
           >
-            Log In
+            {{ isLoading ? "Loading..." : "Sign in" }}
           </button>
         </form>
 
