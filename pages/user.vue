@@ -5,6 +5,7 @@ definePageMeta({
 
 import { ref, onMounted } from "vue";
 import { useNuxtApp } from "#app";
+import BlogPost from "~/components/BlogPost.vue";
 
 const posts = ref([]);
 const openCreatePost = ref(false);
@@ -14,14 +15,17 @@ const image = ref(null);
 const imagePreview = ref(null);
 const isLoading = ref(false);
 const isLoadingCreate = ref(false);
-
 const { $supabase, $trpc } = useNuxtApp();
-
+const router = useRouter();
 onMounted(async () => {
   try {
     isLoading.value = true;
-    const blogs = await $trpc.blogPosts.query();
-    posts.value = blogs;
+    const {
+      data: { session },
+    } = await $supabase.auth.getSession();
+    const token = session.access_token;
+    const blogs = await $trpc.getUserDetails.query(token);
+    posts.value = blogs.userPosts;
     posts.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   } catch (error) {
     console.error(error);
@@ -149,6 +153,13 @@ const createPost = async () => {
     >
       Loading ....
     </h1>
-    <Blog v-else :posts="posts" />
+    <h1 class="text-4xl text-[#535d68] font-bold text-center my-40">
+      your Posts
+    </h1>
+    <div class="container mx-auto flex items-center justify-center mb-20">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <BlogPost v-for="post in posts" :key="post.id" :post="post" />
+      </div>
+    </div>
   </div>
 </template>

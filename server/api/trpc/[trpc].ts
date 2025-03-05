@@ -1,6 +1,7 @@
 
 import { BlogChallenge } from '@prisma/client'
 import { createClient } from '@supabase/supabase-js'
+import { navigateTo } from 'nuxt/app'
 import { createNuxtApiHandler } from 'trpc-nuxt'
 import { z } from 'zod'
 import { prisma } from '~/prisma'
@@ -63,7 +64,7 @@ export const appRouter = router({
                 if (uploadError) {
                     throw new Error('Error uploading image');
                 }
-                console.log(userHandle);
+
 
 
                 const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${data.path}`;
@@ -111,6 +112,42 @@ export const appRouter = router({
             }
         })
         return res
+    }),
+
+
+    getUserDetails: publicProcedure.input(z.string()).query(async ({ input }) => {
+        const token = input
+        try {
+            const { data, error } = await supabase.auth.getUser(token)
+
+            if (!data?.user?.id) {
+                throw new Error('User not authenticated');
+            }
+
+            if (error) {
+                console.log(error);
+                throw new Error(error.message)
+
+            }
+            const user = await prisma.user.findFirst({
+                where: {
+                    user_id: data.user?.id
+                }
+            })
+            const userPosts = await prisma.blogChallenge.findMany({
+                where: {
+                    userHandle: user?.username,
+                    own_id: user?.user_id
+                }
+            })
+
+            return {
+                user,
+                userPosts
+            }
+        } catch (error) {
+            console.log(error);
+        }
     })
 
 
