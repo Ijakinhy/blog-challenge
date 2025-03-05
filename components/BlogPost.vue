@@ -3,7 +3,10 @@ import { ref } from "vue";
 
 const props = defineProps({
   post: Object,
+  isUserPage: Boolean,
+  deletePost: Function,
 });
+
 const createdAt = new Date(props.post.created_at);
 </script>
 
@@ -27,6 +30,14 @@ const createdAt = new Date(props.post.created_at);
       <span class="text-sm text-right font-bold text-gray-500">
         created At: {{ createdAt.toLocaleString() }}</span
       >
+      <div v-if="isUserPage" class="flex flex-wrap">
+        <button
+          @click="deletePost"
+          class="bg-red-600 rounded-tl-full rounded-br-full text-white font-medium text-xs text-center self-center px-4 py-2"
+        >
+          delete
+        </button>
+      </div>
     </div>
   </div>
 </template>

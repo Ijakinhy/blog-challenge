@@ -148,8 +148,47 @@ export const appRouter = router({
         } catch (error) {
             console.log(error);
         }
-    })
+    }),
 
+    deletePost: publicProcedure.input(z.object({
+        token: z.string(),
+        postId: z.number()
+    })).mutation(async ({ input }) => {
+        const { token, postId } = input
+        try {
+            const { data: { user }, error } = await supabase.auth.getUser(token)
+
+            if (error || !user) {
+                throw new Error("User is not authenticated or token is invalid");
+            }
+            const post = await prisma.blogChallenge.findUnique({
+                where: {
+                    id: postId
+                }
+            })
+            if (!post) {
+                throw new Error("Post not found");
+            }
+
+            // Ensure that the authenticated user is the owner of the post
+            if (post.own_id !== user.id) {
+                throw new Error("You do not have permission to delete this post");
+            }
+
+            const deletePost = await prisma.blogChallenge.delete({
+                where: {
+                    id: postId
+                }
+            })
+
+            return deletePost
+        } catch (error) {
+            console.log(error);
+
+
+        }
+
+    })
 
 })
 

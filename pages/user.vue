@@ -35,6 +35,22 @@ onMounted(async () => {
   }
 });
 
+const handleDeletePost = async (postId) => {
+  const {
+    data: { session },
+  } = await $supabase.auth.getSession();
+  const token = session.access_token;
+
+  if (!session || !session.access_token) {
+    navigateTo("/login");
+    console.error("User not authenticated");
+    return;
+  }
+
+  await $trpc.deletePost.mutate({ token, postId });
+  posts.value = posts.value.filter((post) => post.id !== postId);
+};
+
 // Handle image selection
 const handleUploadImage = (event) => {
   const file = event.target.files[0];
@@ -153,13 +169,21 @@ const createPost = async () => {
     >
       Loading ....
     </h1>
-    <h1 class="text-4xl text-[#535d68] font-bold text-center my-40">
-      your Posts
-    </h1>
-    <div class="container mx-auto flex items-center justify-center mb-20">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <BlogPost v-for="post in posts" :key="post.id" :post="post" />
+    <template v-else>
+      <h1 class="text-4xl text-[#535d68] font-bold text-center my-40">
+        your Posts
+      </h1>
+      <div class="container mx-auto flex items-center justify-center mb-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <BlogPost
+            :deletePost="() => handleDeletePost(post.id)"
+            :isUserPage="true"
+            v-for="post in posts"
+            :key="post.id"
+            :post="post"
+          />
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
