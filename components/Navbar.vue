@@ -31,6 +31,7 @@ const handleLogout = async () => {
         </h1>
       </div>
       <div class="flex space-x-2">
+        <button></button>
         <button
           class="text-white hover:bg-[#69ccef] hover:font-bold rounded-md text-[17px] font-medium py-2 px-2"
           @click="openCreatePost = !openCreatePost"

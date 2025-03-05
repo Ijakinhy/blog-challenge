@@ -88,7 +88,8 @@ const signUp = async () => {
 
         <button
           type="submit"
-          class="p-1 rounded-md hover:bg-[#00778cd8] bg-[#00778c] w-full text-white mt-8 text-lg font-medium"
+          :disabled="isLoading"
+          class="p-1 rounded-md hover:bg-[#00778cd8] bg-[#00778c] disabled:bg-sky-800/60 disabled:cursor-not-allowed w-full text-white mt-8 text-lg font-medium"
         >
           {{ isLoading ? "Loading..." : "Sign up" }}
         </button>

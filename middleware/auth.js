@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const token = session?.access_token;
 
     if (token && to.path === "/login") {
-      return navigateTo("/");
+      return navigateTo("/", { replace: true });
     }
 
     if (!token && to.path !== "/login") {

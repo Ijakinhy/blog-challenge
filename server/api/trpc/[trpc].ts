@@ -45,6 +45,12 @@ export const appRouter = router({
 
                 const userId = authData.user.id;
 
+                const userHandle = await prisma.user.findFirst({
+                    where: {
+                        user_id: userId
+                    }
+                })
+
                 const buffer = Buffer.from(image.split(',')[1], 'base64');
                 const fileName = `blog_post_images/${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
 
@@ -57,6 +63,8 @@ export const appRouter = router({
                 if (uploadError) {
                     throw new Error('Error uploading image');
                 }
+                console.log(userHandle);
+
 
                 const imageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${data.path}`;
 
@@ -68,6 +76,7 @@ export const appRouter = router({
                         post_image: imageUrl,
                         created_at: new Date(),
                         own_id: userId,
+                        userHandle: userHandle?.username
                     },
                 });
 
@@ -95,6 +104,7 @@ export const appRouter = router({
 
         const res = await prisma.user.create({
             data: {
+                joined_at: new Date(),
                 email: email,
                 username: username,
                 user_id: data.user?.id
