@@ -25,37 +25,42 @@ const handleLogout = async () => {
 <template>
   <nav class="bg-[#00778c] p-3">
     <div class="container mx-auto flex justify-between items-center">
-      <div>
-        <h1 class="text-white text-4xl font-bold font-montserrat">
-          <span class="text-[#69ccef]">Blog</span>Challenge
-        </h1>
+      <div class="flex text-white font-extrabold">
+        <a
+          class="flex text-white text-base items-center no-underline hover:text-white hover:no-underline"
+          href="#"
+        >
+          <img
+            src="../assets/jakin.jpg"
+            class="w-10 h-10 rounded-full object-cover"
+            alt=""
+          />
+
+          <span class="hidden w-0 md:w-auto md:block pl-2"
+            >jakin israel Havyarimana
+          </span>
+        </a>
       </div>
       <div class="flex space-x-2">
-        <button
+        <NuxtLink
+          to="/"
           class="text-white hover:bg-[#69ccef] hover:font-bold rounded-md text-[17px] font-medium py-2 px-2"
-          @click="navigateTo('/')"
         >
           Home
-        </button>
+        </NuxtLink>
 
-        <button
-          class="text-white hover:bg-[#69ccef] hover:font-bold rounded-md text-[17px] font-medium py-2 px-2"
-          @click="navigateTo('/user')"
-        >
-          My Blog Posts
-        </button>
-        <button
-          class="text-white hover:bg-[#69ccef] hover:font-bold rounded-md text-[17px] font-medium py-2 px-2"
-          @click="openCreatePost = !openCreatePost"
-        >
-          create post
-        </button>
-        <button
-          @click="handleLogout"
+        <NuxtLink
+          to="/about"
           class="text-white hover:bg-[#69ccef] hover:font-bold rounded-md text-[17px] font-medium py-2 px-2"
         >
-          Logout
-        </button>
+          About
+        </NuxtLink>
+        <NuxtLink
+          to="/contact"
+          class="text-white hover:bg-[#69ccef] hover:font-bold rounded-md text-[17px] font-medium py-2 px-2"
+        >
+          Contact
+        </NuxtLink>
       </div>
     </div>
   </nav>
